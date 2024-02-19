@@ -2,6 +2,7 @@ import 'dart:convert';
 import 'dart:io';
 
 import 'package:firebase_database/firebase_database.dart';
+import 'package:tracker/main.dart';
 import 'package:tracker/src/features/tracker/domain/entity/notification_entity.dart';
 import 'package:http/http.dart' as http;
 import 'package:tracker/src/features/tracker/domain/entity/tracker_entity.dart';
@@ -19,7 +20,7 @@ class RemoteTrackerDataSourceImpl extends RemoteTrackerDataSource {
   // @param : uuid, RemoteLocationDataEntity
   @override
   Future<void> saveTrackerLocation({String? uuid, required RemoteLocationDataEntity remoteLocationData}) async {
-    DatabaseReference database = FirebaseDatabase.instance.ref("LOCATION_DB");
+    DatabaseReference database = FirebaseDatabase.instance.ref(env.config.firebaseDb);
     await database.child(uuid ?? "1234").set(remoteLocationData.toJson());
   }
 
@@ -29,9 +30,9 @@ class RemoteTrackerDataSourceImpl extends RemoteTrackerDataSource {
   @override
   Future<http.Response> sendNotification({required NotificationEntity notificationEntity}) async {
     final response = await _client.post(
-      Uri.parse('https://fcm.googleapis.com/fcm/send'),
+      Uri.parse(env.config.firebaseNotificationUrl),
       headers: {
-        HttpHeaders.authorizationHeader: 'key=AAAAUQrMWMo:APA91bEtaRoacDvRCRAR_EMvnhPJi7pcn_MCgRvKHV8Ld4n_wGk3iAUHB7OylA3iYQJctH3JtmCwdBu_MBXdqJLcsODhk91e5uLjlWToUfAVkzzH5yIJP5sbBbth65J6hRkH5aptNJXy',
+        HttpHeaders.authorizationHeader: 'key=${env.config.firebaseMsgToken}',
         HttpHeaders.contentTypeHeader: 'application/json',
       },
       body: jsonEncode(notificationEntity.toJson()),

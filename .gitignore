@@ -41,3 +41,5 @@ app.*.map.json
 /android/app/debug
 /android/app/profile
 /android/app/release
+lib/src/config/env/tracer_env.dart
+lib/src/config/env/tracker_env.dart

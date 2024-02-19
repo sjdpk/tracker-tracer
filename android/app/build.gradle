@@ -58,6 +58,19 @@ android {
             signingConfig signingConfigs.debug
         }
     }
+    flavorDimensions "trackerTracer" 
+    productFlavors { 
+        tracker { 
+            dimension "trackerTracer" 
+            resValue "string", "app_name", "Tracker" 
+            applicationIdSuffix "" 
+        } 
+        tracer { 
+            dimension "trackerTracer" 
+            resValue "string", "app_name", "Tracer" 
+            applicationIdSuffix "" 
+        } 
+    } 
 }
 
 flutter {
