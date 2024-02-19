@@ -2,9 +2,9 @@
 // including authentication and portal screens and so on.
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
+import 'package:tracker/main.dart';
 import 'package:tracker/src/features/tracer/presentation/screen/tracer_screen.dart';
 import 'package:tracker/src/features/tracker/presentation/screen/tracker_screen.dart';
-import 'package:tracker/src/home_screen.dart';
 export 'package:go_router/go_router.dart';
 
 class AppRoutesList {
@@ -22,10 +22,18 @@ class AppRoutes {
     routes: [
       GoRoute(
         path: AppRoutesList.homeScreen,
-        builder: (context, state) => HomeScreen(),
+        redirect: (context, state) async {
+          final trackerApp = env.config.appName == "Tracker";
+          if (trackerApp) {
+            return AppRoutesList.trackerScreen;
+          } else {
+            return AppRoutesList.tracerScreen;
+          }
+        },
+        builder: (context, state) => TracerScreen(),
       ),
       GoRoute(
-        path: AppRoutesList.tracerScreen,
+        path: AppRoutesList.trackerScreen,
         builder: (context, state) => TrackerScreen(),
       ),
       GoRoute(

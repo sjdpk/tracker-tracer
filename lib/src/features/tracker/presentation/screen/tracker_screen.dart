@@ -4,8 +4,6 @@ import 'package:flutter_map/flutter_map.dart';
 import 'package:flutter_map_location_marker/flutter_map_location_marker.dart';
 import 'package:latlong2/latlong.dart';
 import 'package:location/location.dart';
-import 'package:tracker/src/config/router/app_routes.dart';
-import 'package:tracker/src/core/resources/colors.dart';
 import 'package:tracker/src/core/services/geolocation/location_service.dart';
 import 'package:tracker/src/core/utils/common.dart';
 import 'package:tracker/src/features/tracker/presentation/bloc/tracker/tracker_bloc.dart';
@@ -22,14 +20,6 @@ class TrackerScreen extends StatelessWidget {
     });
 
     return Scaffold(
-      appBar: AppBar(
-        backgroundColor: AppColor.transparent,
-        title: TextButton(
-            onPressed: () {
-              context.push(AppRoutesList.tracerScreen);
-            },
-            child: Text("Tracker")),
-      ),
       bottomNavigationBar: BlocBuilder<TrackerBloc, TrackerState>(builder: (context, state) {
         if (state is TrackerLoaded) {
           String address = getCurrentLocation(state.placemark);

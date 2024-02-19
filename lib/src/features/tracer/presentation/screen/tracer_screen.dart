@@ -1,12 +1,11 @@
+import 'package:ed_screen_recorder/ed_screen_recorder.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_map/flutter_map.dart';
 import 'package:latlong2/latlong.dart';
+import 'package:tracker/src/core/resources/colors.dart';
 import 'package:tracker/src/core/services/firebase/firebase.dart';
 import 'package:tracker/src/core/services/geolocation/location_service.dart';
-import 'package:tracker/src/core/utils/common.dart';
 import 'package:tracker/src/features/tracker/domain/entity/tracker_entity.dart';
-import 'package:tracker/src/features/tracker/presentation/bloc/tracker/tracker_bloc.dart';
 import 'package:tracker/src/features/tracker/presentation/widget/reload_btn.dart';
 
 class TracerScreen extends StatelessWidget {
@@ -16,13 +15,6 @@ class TracerScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      bottomNavigationBar: BlocBuilder<TrackerBloc, TrackerState>(builder: (context, state) {
-        if (state is TrackerLoaded) {
-          String address = getCurrentLocation(state.placemark);
-          return currentLocationWidget(address);
-        }
-        return const Offstage();
-      }),
       body: StreamBuilder(
         stream: LocationService().getUserLocationTrackDetailByUUId(uuid: "1234").onValue,
         builder: (context, snapshot) {
@@ -55,10 +47,10 @@ class TracerScreen extends StatelessWidget {
             // Trigger notification if it's offline and notification hasn't been sent yet
             if (isOffline && !offlineNotificationSend) {
               offlineNotificationSend = true;
-              LocalNotificationService.show(title: "Tracker is Offline", body: "Tracker is offline for more than 1 minute");
+              LocalNotificationService.show(title: "Tracker is Offline", body: "We will update you once Tracker's back online.");
             }
 
-            return mapWidget(remoteLocationData);
+            return mapWidget(context, remoteLocationData, isOffline: isOffline);
           }
 
           return reloadBtn(context);
@@ -67,7 +59,7 @@ class TracerScreen extends StatelessWidget {
     );
   }
 
-  FlutterMap mapWidget(RemoteLocationDataEntity remoteLocationData) {
+  FlutterMap mapWidget(BuildContext context, RemoteLocationDataEntity remoteLocationData, {bool isOffline = false}) {
     return FlutterMap(
       mapController: _mapController,
       options: MapOptions(
@@ -92,18 +84,64 @@ class TracerScreen extends StatelessWidget {
             Marker(
               point: LatLng(remoteLocationData.latitude as double, remoteLocationData.longitude as double),
               child: const Icon(
-                Icons.location_on_outlined,
+                Icons.circle,
                 size: 40,
                 color: Colors.blue,
               ),
             ),
           ],
         ),
+        Align(
+          alignment: Alignment.bottomCenter,
+          child: currentLocationWidget(remoteLocationData.address, isOffline: isOffline),
+        ),
+
+        // align booton right floating button move map to curren position
+        Align(
+          alignment: Alignment.bottomRight,
+          child: Container(
+            margin: const EdgeInsets.only(bottom: 120, right: 20),
+            child: FloatingActionButton(
+              onPressed: () {
+                _mapController.move(LatLng(remoteLocationData.latitude as double, remoteLocationData.longitude as double), 17.0);
+              },
+              child: const Icon(Icons.my_location),
+            ),
+          ),
+        ),
+        Align(
+          alignment: Alignment.topRight,
+          child: GestureDetector(
+            onTap: () async {
+              final Size size = MediaQuery.sizeOf(context);
+              await EdScreenRecorder().startRecordScreen(
+                fileName: "tracer-screen",
+                width: size.width ~/ 1,
+                height: size.height ~/ 1,
+                audioEnable: true,
+              );
+            },
+            child: Container(
+              height: 30,
+              decoration: BoxDecoration(
+                color: AppColor.error,
+                shape: BoxShape.circle,
+                border: Border.all(color: AppColor.primary, width: 2),
+              ),
+              margin: const EdgeInsets.fromLTRB(0, 64, 20, 0),
+              padding: const EdgeInsets.all(4),
+              child: Padding(
+                padding: const EdgeInsets.all(8.0),
+                child: Icon(Icons.fiber_manual_record_rounded, color: isOffline ? Colors.red : Colors.green),
+              ),
+            ),
+          ),
+        ),
       ],
     );
   }
 
-  Container currentLocationWidget(String address) {
+  Container currentLocationWidget(String address, {bool isOffline = false}) {
     return Container(
       padding: const EdgeInsets.all(20),
       width: double.infinity,
@@ -115,11 +153,11 @@ class TracerScreen extends StatelessWidget {
         crossAxisAlignment: CrossAxisAlignment.start,
         mainAxisSize: MainAxisSize.min,
         children: [
-          const Flexible(
+          Flexible(
             child: Text(
-              "Tracker Current Location",
+              "Tracker ${isOffline ? "Last" : "Current"} Location",
               overflow: TextOverflow.visible,
-              style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
+              style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
             ),
           ),
           Flexible(

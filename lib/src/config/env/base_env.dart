@@ -19,9 +19,8 @@ class Environment {
   }
 
   static final Environment _singleton = Environment._internal();
-
-  static const String tracker = 'Tracker';
-  static const String tracer = 'Tracer';
+  static const String trackerApp = 'Tracker';
+  static const String tracerApp = 'Tracer';
 
   late BaseConfig config;
 
@@ -31,12 +30,12 @@ class Environment {
 
   BaseConfig _getConfig(String environment) {
     switch (environment) {
-      case Environment.tracer:
+      case Environment.tracerApp:
         return TracerConfig();
-      case Environment.tracker:
+      case Environment.trackerApp:
         return TrackerConfig();
       default:
-        return TrackerConfig();
+        return TracerConfig();
     }
   }
 }
