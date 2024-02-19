@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:tracker/src/config/themes/app_theme.dart';
+import 'package:tracker/src/core/services/firebase/firebase.dart';
 import 'locator.dart' as di;
 import 'src/config/router/app_routes.dart';
 import 'src/features/tracker/presentation/bloc/tracker/tracker_bloc.dart';
@@ -12,6 +13,7 @@ void main() async {
     DeviceOrientation.portraitUp
   ]);
   await di.init();
+  await FirebaseServices.init();
   runApp(const MyApp());
 }
 
