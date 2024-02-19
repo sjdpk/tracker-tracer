@@ -42,10 +42,10 @@ android {
 
     defaultConfig {
         // TODO: Specify your own unique Application ID (https://developer.android.com/studio/build/application-id.html).
-        applicationId "np.com.sapkotadeepak.tracker"
+        applicationId "np.com.sapkotadeepak"
         // You can update the following values to match your application needs.
         // For more information, see: https://docs.flutter.dev/deployment/android#reviewing-the-gradle-build-configuration.
-        minSdkVersion 21
+        minSdkVersion 24
         targetSdkVersion 33
         versionCode flutterVersionCode.toInteger()
         versionName flutterVersionName
@@ -63,12 +63,12 @@ android {
         tracker { 
             dimension "trackerTracer" 
             resValue "string", "app_name", "Tracker" 
-            applicationIdSuffix "" 
+            applicationIdSuffix ".tracker" 
         } 
         tracer { 
             dimension "trackerTracer" 
             resValue "string", "app_name", "Tracer" 
-            applicationIdSuffix "" 
+            applicationIdSuffix ".tracer" 
         } 
     } 
 }
@@ -77,4 +77,8 @@ flutter {
     source '../..'
 }
 
-dependencies {}
+dependencies {
+    implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:$kotlin_version"
+    implementation 'com.github.HBiSoft:HBRecorder:3.0.1'
+    implementation 'androidx.appcompat:appcompat:1.4.1'
+}

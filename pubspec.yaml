@@ -52,6 +52,7 @@ dependencies:
   latlong2: ^0.9.0
   flutter_map_location_marker: ^8.0.6
   firebase_database: ^10.4.5
+  ed_screen_recorder: ^0.0.14
   
 
 dev_dependencies:
